@@ -1,0 +1,25 @@
+# Stage 1: Build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /app
+
+# Copy solution and project files
+COPY BookNest.sln .
+COPY BookNest/*.csproj ./FoodApplication/
+
+# Restore dependencies
+WORKDIR /app/BookNest
+RUN dotnet restore
+
+# Copy the rest of the source code
+COPY BookNest/. .
+
+# Publish app
+RUN dotnet publish -c Release -o /out /p:UseAppHost=false
+
+# Stage 2: Runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+WORKDIR /app
+COPY --from=build /out .
+
+EXPOSE 5288
+ENTRYPOINT ["dotnet", "BookNest.dll"]

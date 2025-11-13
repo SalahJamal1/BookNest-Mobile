@@ -1,0 +1,62 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Build & Publish .NET Backend
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: food_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -p$MYSQL_ROOT_PASSWORD"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore Dependencies
+        working-directory: server
+        run: dotnet restore
+
+      - name: Build Project
+        working-directory: server
+        run: dotnet build --configuration Release
+
+      - name: Run Tests
+        working-directory: server
+        run: dotnet test --no-build --verbosity normal
+
+      - name: Publish .NET App
+        if: github.ref == 'refs/heads/main'
+        working-directory: server
+        run: dotnet publish -c Release -o ./publish
+
+      - name: Build & Push Docker Image
+        if: github.ref == 'refs/heads/main'
+        env:
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+        run: |
+          echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+          docker build -t $DOCKER_USER/bookNest-backend:latest server
+          docker push $DOCKER_USER/bookNest-backend:latest

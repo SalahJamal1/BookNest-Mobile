@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "6IloNx+Iik8=",
+  "dgSpecHash": "2sEcx9cf7Nk=",
   "success": true,
-  "projectFilePath": "/Users/salah/Desktop/BookNest-Backend/server/BookNest/BookNest.csproj",
+  "projectFilePath": "/Users/salah/Desktop/BookNest-Mobile/server/BookNest/BookNest.csproj",
   "expectedPackageFiles": [
     "/Users/salah/.nuget/packages/automapper/12.0.1/automapper.12.0.1.nupkg.sha512",
     "/Users/salah/.nuget/packages/automapper.extensions.microsoft.dependencyinjection/12.0.1/automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
