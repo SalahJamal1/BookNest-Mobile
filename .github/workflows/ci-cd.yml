@@ -58,5 +58,5 @@ jobs:
           DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
         run: |
           echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-          docker build -t $DOCKER_USER/bookNest-backend:latest server
-          docker push $DOCKER_USER/bookNest-backend:latest
+          docker build -t $DOCKER_USER/book-nest-backend:latest server
+          docker push $DOCKER_USER/book-nest-backend:latest
