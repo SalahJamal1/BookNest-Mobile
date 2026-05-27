@@ -10,8 +10,8 @@ export default function HomeScreen() {
     >
       <Text style={styles.text}>Welcome to Paradise</Text>
 
-      <Link href="/account" style={styles.link}>
-        Guest Area
+      <Link href="/(tabs)/cabins" style={styles.link}>
+        Explore Cabins
       </Link>
     </ImageBackground>
   );

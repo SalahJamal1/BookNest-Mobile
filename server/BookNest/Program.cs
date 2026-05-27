@@ -1,15 +1,16 @@
 using System.Text;
+using BookNest.Configuration;
+using BookNest.Contracts;
+using BookNest.Data;
+using BookNest.Data.seeds;
+using BookNest.Exceptions;
+using BookNest.MiddleWare;
+using BookNest.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using BookNest.Configuration;
-using BookNest.Contracts;
-using BookNest.Data;
-using BookNest.Exceptions;
-using BookNest.MiddleWare;
-using BookNest.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -117,6 +118,12 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var ctx = scope.ServiceProvider.GetRequiredService<BookNestDBContext>();
+    DbSeeder.Seeder(ctx);
 }
 
 app.UseMiddleware<ExceptionMiddleWare>();

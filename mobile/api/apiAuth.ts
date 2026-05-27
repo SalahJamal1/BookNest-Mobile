@@ -1,4 +1,4 @@
-import { IUSERLOGIN } from "@/app/account/login";
+import { IUSERLOGIN } from "@/app/(tabs)/(profile)/login";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "./apiCabins";
 

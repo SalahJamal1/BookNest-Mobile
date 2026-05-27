@@ -4,11 +4,14 @@ import { useWild } from "@/context/WildContext";
 import { ICabins, IRESERVATION } from "@/utils/helper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from "@react-native-picker/picker";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 import React, { SetStateAction } from "react";
 import {
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -21,19 +24,20 @@ type Props = {
   setReservationData: (value: SetStateAction<IRESERVATION>) => void;
   reservationData?: IRESERVATION;
 };
+
 export default function ReservationForm({
   cabin,
   setReservationData,
   reservationData,
 }: Props) {
-  const paddingTop: number = Platform.OS === "android" ? 25 : 5;
   const { user, dispatch } = useWild();
   const router = useRouter();
+
   const handleSubmit = async () => {
     const newBooking: IRESERVATION = {
       ...reservationData!,
       numGuests: Number(
-        String(reservationData?.numGuests).split(" ")[0] as unknown as number
+        String(reservationData?.numGuests).split(" ")[0] as unknown as number,
       ),
     };
 
@@ -43,7 +47,7 @@ export default function ReservationForm({
       dispatch({ type: "USER_REFRESH", payload: refresh?.data?.user });
       await AsyncStorage.setItem("jwt", refresh?.data?.refresh_token);
       setReservationData({} as IRESERVATION);
-      router.replace("/account/reservations");
+      router.replace("/(tabs)/(profile)/reservations");
     } catch (error: any) {
       const message =
         error?.response?.data?.message ||
@@ -59,119 +63,121 @@ export default function ReservationForm({
       });
     }
   };
-  return (
-    <View style={{ ...styles.view, paddingTop: paddingTop }}>
-      <View style={styles.viewHeader}>
-        <Pressable onPress={() => router.back()}>
-          <Text style={styles.back}>back</Text>
-        </Pressable>
-        <Text style={styles.logged}>Logged in as {user?.firstName}</Text>
-      </View>
-      <Text style={styles.text1}>How many guests?</Text>
 
-      <Picker
-        style={styles.picker}
-        selectedValue={reservationData?.numGuests}
-        onValueChange={(e) =>
-          setReservationData((prev) => ({
-            ...prev,
-            numGuests: e,
-          }))
-        }
-        mode="dialog"
-      >
-        <Picker.Item
-          label="Select number of guests..."
-          value="Select number of guests..."
-          color="#222"
-        />
-        {Array.from({ length: +cabin?.maxCapacity }, (_, i) => (
-          <Picker.Item
-            key={i}
-            label={`${i + 1} ${i + 1 > 1 ? "guests" : "guest"}`}
-            value={`${i + 1} ${i + 1 > 1 ? "guests" : "guest"}`}
-            color="#222"
+  return (
+    <View style={styles.container}>
+      {/* Guests Section */}
+      <View style={styles.section}>
+        <View style={styles.sectionTitleRow}>
+          <FontAwesome5 name="users" size={13} color="rgb(198, 154, 99)" />
+          <Text style={styles.sectionLabel}>Number of Guests</Text>
+        </View>
+        <View style={styles.pickerWrapper}>
+          <Picker
+            style={styles.picker}
+            itemStyle={{ color: "#fff" }}
+            selectedValue={reservationData?.numGuests}
+            onValueChange={(e) =>
+              setReservationData((prev) => ({
+                ...prev,
+                numGuests: e,
+              }))
+            }
+            mode="dropdown"
+            dropdownIconColor="rgb(198, 154, 99)"
+            selectionColor={"rgb(198, 154, 99)"}
+          >
+            <Picker.Item
+              label="Select number of guests..."
+              value="Select number of guests..."
+              color="#fff"
+              style={{ color: "#fff" }}
+            />
+            {Array.from({ length: +cabin?.maxCapacity }, (_, i) => (
+              <Picker.Item
+                key={i}
+                label={`${i + 1} ${i + 1 > 1 ? "guests" : "guest"}`}
+                value={`${i + 1} ${i + 1 > 1 ? "guests" : "guest"}`}
+                color="#fff"
+              />
+            ))}
+          </Picker>
+        </View>
+      </View>
+
+      {/* Notes Section */}
+      <View style={styles.section}>
+        <View style={styles.sectionTitleRow}>
+          <FontAwesome5
+            name="sticky-note"
+            size={13}
+            color="rgb(198, 154, 99)"
           />
-        ))}
-      </Picker>
-      <Text style={styles.text1}>Anything we should know about your stay?</Text>
-      <TextInput
-        style={styles.input}
-        numberOfLines={7}
-        value={reservationData?.observations}
-        onChangeText={(text) =>
-          setReservationData((prev) => ({ ...prev, observations: text }))
-        }
-        autoCapitalize="none"
-        autoCorrect={false}
-      />
-      <Pressable onPress={handleSubmit}>
-        <Text style={styles.text}>Reverse Now</Text>
-      </Pressable>
+          <Text style={styles.sectionLabel}>Special Requests</Text>
+        </View>
+        <TextInput
+          style={styles.input}
+          numberOfLines={5}
+          multiline
+          value={reservationData?.observations}
+          onChangeText={(text) =>
+            setReservationData((prev) => ({ ...prev, observations: text }))
+          }
+          autoCapitalize="none"
+          autoCorrect={false}
+          placeholder="Anything we should know about your stay?"
+          placeholderTextColor="rgba(255, 255, 255, 0.46)"
+        />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  view: {
-    backgroundColor: "rgb(244 236 225)",
-    borderColor: "rgb(198 154 99)",
-    overflow: "hidden",
-    borderWidth: 1,
+  container: {
+    flex: 1,
+    paddingTop: 10,
+    backgroundColor: "rgb(15, 23, 30)",
   },
-  viewHeader: {
-    display: "flex",
-    flexDirection: "row",
 
+  section: {
     marginHorizontal: 20,
-  },
-  back: {
-    fontSize: 16,
-    fontWeight: "500",
-    textTransform: "capitalize",
-    width: "100%",
-    letterSpacing: 1,
-    zIndex: 99,
-  },
-  logged: {
-    fontSize: 16,
-    fontWeight: "500",
-    textAlign: "center",
     marginBottom: 20,
-    textTransform: "capitalize",
-    marginHorizontal: "auto",
   },
-  text1: {
-    paddingLeft: 20,
-    fontSize: 16,
-    fontWeight: "500",
+  sectionTitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
     marginBottom: 10,
   },
-  text: {
-    fontSize: 16,
-    color: "#fff",
-    fontWeight: "500",
-    textAlign: "center",
-    padding: 10,
-    backgroundColor: "rgb(198 154 99)",
+  sectionLabel: {
+    fontSize: 13,
+    color: "rgba(255, 255, 255, 0.7)",
+    fontWeight: "600",
+    letterSpacing: 0.2,
   },
-  input: {
-    marginHorizontal: 20,
-    borderColor: "#222",
+  pickerWrapper: {
+    backgroundColor: "rgba(25, 36, 48, 0.7)",
+    borderRadius: 12,
     borderWidth: 1,
-    paddingVertical: 15,
-    paddingHorizontal: 10,
-    borderRadius: 20,
-    marginBottom: 20,
+    borderColor: "rgba(76, 107, 138, 0.3)",
+    overflow: "hidden",
   },
   picker: {
-    marginHorizontal: 10,
-
-    borderColor: "#222",
+    height: 140,
+    color: Platform.OS === "android" ? "#fff" : "#fff",
+  },
+  input: {
+    backgroundColor: "rgba(25, 36, 48, 0.5)",
+    borderRadius: 12,
     borderWidth: 1,
-    borderRadius: 20,
-    height: 145,
-    overflow: "hidden",
-    marginBottom: 20,
+    borderColor: "rgba(76, 107, 138, 0.3)",
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    color: "#ffffff",
+    fontSize: 14,
+    lineHeight: 20,
+    textAlignVertical: "top",
+    minHeight: 110,
   },
 });

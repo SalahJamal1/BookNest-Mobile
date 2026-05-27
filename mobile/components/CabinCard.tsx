@@ -2,133 +2,193 @@ import { ICabins } from "@/utils/helper";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { Link } from "expo-router";
 import React from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+
 type Props = { item: ICabins };
 
 export default function CabinCard({ item }: Props) {
+  const finalPrice = item.discount > 0 ? item.regularPrice - item.discount : item.regularPrice;
+
   return (
-    <View style={styles.view}>
-      <View style={styles.viewImage}>
+    <View style={styles.card}>
+      {/* Cabin Image Container with Badge Overlay */}
+      <View style={styles.imageContainer}>
         <Image
           source={{ uri: item.image }}
           style={styles.image}
           resizeMode="cover"
         />
-      </View>
-      <View style={styles.view2}>
-        <View style={styles.view3}>
-          <Text style={styles.name}>Cabin {item.name}</Text>
-          <View style={styles.view4}>
-            <FontAwesome5 name="user-friends" size={15} color="#ddd" />
-            <Text
-              style={{
-                fontSize: 13,
-                color: "#ddd",
-                fontWeight: "300",
-              }}
-            >
-              For up to {item.maxCapacity} guests
-            </Text>
-          </View>
-          <View style={styles.view5}>
-            <Text style={styles.price}>
-              $
-              {item.discount > 0
-                ? `${item.regularPrice - item.discount}`
-                : `${item.regularPrice}`}
-            </Text>
-            {item.discount > 0 && (
-              <Text style={styles.priceDiscount}>${item.regularPrice}</Text>
-            )}
-            <Text style={styles.night}>/ night</Text>
-          </View>
+        {/* Guest capacity badge overlay */}
+        <View style={styles.capacityBadge}>
+          <FontAwesome5 name="users" size={10} color="rgb(198, 154, 99)" />
+          <Text style={styles.capacityBadgeText}>Up to {item.maxCapacity}</Text>
         </View>
-        <View style={styles.view6}>
-          <Link href={`/(cabins)/${item.id}`} style={styles.link}>
-            Details & reservation →
+      </View>
+
+      {/* Cabin Details Section */}
+      <View style={styles.detailsContainer}>
+        <View style={styles.headerRow}>
+          <Text style={styles.name} numberOfLines={1}>
+            Cabin {item.name}
+          </Text>
+          {item.discount > 0 && (
+            <View style={styles.discountTag}>
+              <Text style={styles.discountTagText}>
+                Save ${item.discount}
+              </Text>
+            </View>
+          )}
+        </View>
+
+        {/* Pricing Layout */}
+        <View style={styles.bottomRow}>
+          <View style={styles.priceBlock}>
+            <Text style={styles.priceLabel}>PER NIGHT</Text>
+            <View style={styles.priceContainer}>
+              <Text style={styles.price}>${finalPrice}</Text>
+              {item.discount > 0 && (
+                <Text style={styles.originalPrice}>${item.regularPrice}</Text>
+              )}
+            </View>
+          </View>
+
+          {/* Luxury CTA Button */}
+          <Link href={`/(cabins)/${item.id}`} asChild>
+            <Pressable style={styles.ctaButton}>
+              <Text style={styles.ctaText}>Book</Text>
+              <FontAwesome5 name="chevron-right" size={10} color="#15171a" />
+            </Pressable>
           </Link>
         </View>
       </View>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
-  view: {
-    display: "flex",
-    flexDirection: "row",
-    marginBottom: 20,
-    borderColor: "rgb(76 107 138)",
+  card: {
+    backgroundColor: "rgba(25, 36, 48, 0.6)", // Sleek dark card background
+    borderRadius: 16,
     borderWidth: 1,
-  },
-  view2: {
-    flexGrow: 1,
-  },
-  view3: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-  },
-  view4: {
-    display: "flex",
+    borderColor: "rgba(76, 107, 138, 0.2)",
     flexDirection: "row",
-    gap: 7,
-    marginBottom: 10,
+    marginBottom: 16,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  view5: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    alignItems: "flex-end",
-    gap: 5,
-  },
-  view6: {
-    display: "flex",
-    alignItems: "flex-end",
-    borderColor: "rgb(76 107 138)",
-    borderTopWidth: 1,
-  },
-  viewImage: {
+  imageContainer: {
+    width: 125,
+    height: 125,
     position: "relative",
-    flex: 1,
+    backgroundColor: "rgba(15, 23, 30, 0.5)",
   },
   image: {
-    height: "100%",
     width: "100%",
+    height: "100%",
+  },
+  capacityBadge: {
     position: "absolute",
-    borderColor: "rgb(76 107 138)",
-    borderRightWidth: 1,
+    top: 8,
+    left: 8,
+    backgroundColor: "rgba(15, 23, 30, 0.85)", // Semi-transparent obsidian
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "rgba(198, 154, 99, 0.3)",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  capacityBadgeText: {
+    color: "rgb(198, 154, 99)",
+    fontSize: 9,
+    fontWeight: "700",
+    letterSpacing: 0.3,
+  },
+  detailsContainer: {
+    flex: 1,
+    padding: 14,
+    justifyContent: "space-between",
+  },
+  headerRow: {
+    flexDirection: "column",
+    alignItems: "flex-start",
+    gap: 4,
   },
   name: {
-    fontSize: 15,
-    color: "rgb(198 154 99)",
-    fontWeight: "500",
-    marginBottom: 20,
-    lineHeight: 15,
+    fontSize: 18,
+    color: "#ffffff",
+    fontWeight: "700",
+    letterSpacing: 0.2,
+  },
+  discountTag: {
+    backgroundColor: "rgba(198, 154, 99, 0.15)",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: "rgba(198, 154, 99, 0.3)",
+  },
+  discountTagText: {
+    color: "rgb(218, 174, 119)",
+    fontSize: 9,
+    fontWeight: "600",
+    letterSpacing: 0.2,
+  },
+  bottomRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+  },
+  priceBlock: {
+    flexDirection: "column",
+  },
+  priceLabel: {
+    fontSize: 8,
+    color: "rgba(255, 255, 255, 0.4)",
+    fontWeight: "700",
+    letterSpacing: 1,
+    marginBottom: 2,
+  },
+  priceContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
   },
   price: {
-    fontSize: 15,
-    color: "#ddd",
-    fontWeight: "500",
-    textAlign: "right",
+    fontSize: 20,
+    color: "#ffffff",
+    fontWeight: "800",
   },
-  priceDiscount: {
-    fontSize: 12,
-    color: "rgb(76 107 138)",
-    fontWeight: "500",
-    textAlign: "right",
+  originalPrice: {
+    fontSize: 13,
+    color: "rgba(255, 255, 255, 0.4)",
     textDecorationLine: "line-through",
+    fontWeight: "400",
   },
-  night: {
-    fontSize: 15,
-    color: "#ddd",
-    fontWeight: "500",
-    textAlign: "right",
+  ctaButton: {
+    backgroundColor: "rgb(198, 154, 99)", // Amber Gold
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    shadowColor: "rgb(198, 154, 99)",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
-  link: {
-    borderColor: "rgb(76 107 138)",
-    fontWeight: "500",
-    color: "#fff",
-    borderLeftWidth: 1,
-    padding: 10,
-    backgroundColor: "rgb(198 154 99)",
+  ctaText: {
+    color: "#15171a", // High contrast dark text
+    fontSize: 12,
+    fontWeight: "700",
   },
 });
+

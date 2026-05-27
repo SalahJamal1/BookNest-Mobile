@@ -48,61 +48,6 @@ export default function RootLayout() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
-          name="modal"
-          options={{
-            presentation: "modal",
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="account/index"
-          options={{
-            title: "Guest Area",
-            headerTitleAlign: "center",
-            headerStyle: {
-              backgroundColor: "rgb(19 28 36)",
-            },
-
-            headerBackTitle: "Back",
-            headerTintColor: "#fff",
-          }}
-        />
-        <Stack.Screen
-          name="account/login"
-          options={{
-            headerStyle: {
-              backgroundColor: "rgb(19 28 36)",
-            },
-
-            headerBackTitle: "Back",
-            headerTintColor: "#fff",
-            headerTitle: "",
-          }}
-        />
-        <Stack.Screen
-          name="account/reservations"
-          options={{
-            headerStyle: {
-              backgroundColor: "rgb(19 28 36)",
-            },
-
-            headerBackTitle: "Back",
-            headerTintColor: "#fff",
-            headerTitle: "",
-          }}
-        />
-        <Stack.Screen
-          name="account/signup"
-          options={{
-            headerStyle: {
-              backgroundColor: "rgb(19 28 36)",
-            },
-            headerBackTitle: "Back",
-            headerTintColor: "#fff",
-            headerTitle: "",
-          }}
-        />
-        <Stack.Screen
           name="+not-found"
           options={{
             title: "Sorry !!",
