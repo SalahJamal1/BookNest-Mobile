@@ -5,7 +5,7 @@ let baseURL;
 if (Platform.OS === "android") {
   baseURL = "http://10.0.2.2:5208/api/v1";
 } else {
-  baseURL = "http://192.168.1.28:5208/api/v1";
+  baseURL = "http://192.168.1.27:5208/api/v1";
 }
 
 export const api = axios.create({

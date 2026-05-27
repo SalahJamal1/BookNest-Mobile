@@ -10668,3 +10668,4 @@ LIMIT 1
 2026-05-27 05:58:55.488 +03:00 [INF] Executed action BookNest.Controllers.CabinsController.Get (BookNest) in 37.6863ms
 2026-05-27 05:58:55.488 +03:00 [INF] Executed endpoint 'BookNest.Controllers.CabinsController.Get (BookNest)'
 2026-05-27 05:58:55.488 +03:00 [INF] Request finished HTTP/1.1 GET http://192.168.1.28:5208/api/v1/cabins/1 - 200 null application/json; charset=utf-8 42.8512ms
+2026-05-27 06:02:17.993 +03:00 [INF] Application is shutting down...

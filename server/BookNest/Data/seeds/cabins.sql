@@ -1,3 +1,4 @@
+use book_nest;
 CREATE TABLE IF NOT EXISTS Cabins
 (
     id
