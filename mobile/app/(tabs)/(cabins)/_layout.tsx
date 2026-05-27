@@ -8,7 +8,11 @@ export default function CabinLayout() {
   const router = useRouter();
   const { cabin, user } = useWild();
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        animation: "fade_from_bottom",
+      }}
+    >
       <Stack.Screen name="[cabinId]" options={{ headerShown: false }} />
       <Stack.Screen
         name="cabin-reserve"

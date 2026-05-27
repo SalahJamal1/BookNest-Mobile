@@ -45,7 +45,11 @@ export const toastConfig = {
 export default function RootLayout() {
   return (
     <WildContext>
-      <Stack>
+      <Stack
+        screenOptions={{
+          animation: "slide_from_bottom",
+        }}
+      >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="+not-found"

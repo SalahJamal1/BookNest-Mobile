@@ -1,22 +1,52 @@
 import { ICabins } from "@/utils/helper";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { Link } from "expo-router";
-import React from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { useEffect } from "react";
+import {
+  Animated,
+  Pressable,
+  StyleSheet,
+  Text,
+  useAnimatedValue,
+  View,
+} from "react-native";
 
 type Props = { item: ICabins };
 
 export default function CabinCard({ item }: Props) {
-  const finalPrice = item.discount > 0 ? item.regularPrice - item.discount : item.regularPrice;
+  const finalPrice =
+    item.discount > 0 ? item.regularPrice - item.discount : item.regularPrice;
+  const anim = useAnimatedValue(0);
+  useEffect(() => {
+    anim.setValue(0);
+    Animated.timing(anim, {
+      toValue: 1,
+      useNativeDriver: true,
+      duration: 1000,
+    }).start();
+  }, [anim]);
 
+  const opacity = anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 1],
+  });
+  const scale = anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 1],
+  });
+  const blur = anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [10, 0],
+  });
   return (
-    <View style={styles.card}>
+    <Animated.View style={[styles.card, { opacity, transform: [{ scale }] }]}>
       {/* Cabin Image Container with Badge Overlay */}
       <View style={styles.imageContainer}>
-        <Image
+        <Animated.Image
           source={{ uri: item.image }}
-          style={styles.image}
+          style={[styles.image, { opacity }]}
           resizeMode="cover"
+          blurRadius={blur}
         />
         {/* Guest capacity badge overlay */}
         <View style={styles.capacityBadge}>
@@ -33,9 +63,7 @@ export default function CabinCard({ item }: Props) {
           </Text>
           {item.discount > 0 && (
             <View style={styles.discountTag}>
-              <Text style={styles.discountTagText}>
-                Save ${item.discount}
-              </Text>
+              <Text style={styles.discountTagText}>Save ${item.discount}</Text>
             </View>
           )}
         </View>
@@ -61,7 +89,7 @@ export default function CabinCard({ item }: Props) {
           </Link>
         </View>
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -191,4 +219,3 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 });
-

@@ -9,11 +9,13 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect } from "react";
 import {
+  Animated,
   Image,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  useAnimatedValue,
   View,
 } from "react-native";
 
@@ -22,14 +24,33 @@ export default function Cabin() {
   const { cabinId } = useLocalSearchParams();
   const { fetchCabin } = useCabins();
   const router = useRouter();
+  const anim = useAnimatedValue(0);
 
   useEffect(() => {
+    if (!cabinId) return;
     fetchCabin(+cabinId, dispatch);
   }, [fetchCabin, cabinId, dispatch]);
 
-  if (error) return <Error error={error} />;
-  if (loader) return <Spinner />;
+  useEffect(() => {
+    anim.setValue(0);
+    Animated.timing(anim, {
+      toValue: 1,
+      useNativeDriver: true,
+      duration: 1000,
+    }).start();
+  }, [anim]);
 
+  const opacity = anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 1],
+  });
+
+  const blur = anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [10, 0],
+  });
+  if (loader && !cabin) return <Spinner />;
+  if (error) return <Error error={error} />;
   return (
     <View style={styles.container}>
       <ScrollView
@@ -38,13 +59,17 @@ export default function Cabin() {
       >
         {/* Immersive Image Header */}
         <View style={styles.imageWrapper}>
-          <Image
+          <Animated.Image
             source={{ uri: cabin.image }}
-            style={styles.image}
+            style={[styles.image, { opacity }]}
             resizeMode="cover"
+            blurRadius={blur}
           />
           {/* Custom Floating Back Button */}
-          <Pressable style={styles.backButton} onPress={() => router.back()}>
+          <Pressable
+            style={styles.backButton}
+            onPress={() => router.push("/(tabs)/cabins")}
+          >
             <Ionicons name="chevron-back" size={22} color="#ffffff" />
           </Pressable>
         </View>
